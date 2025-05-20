@@ -10,15 +10,10 @@ env:
   ENTANDO_BOT_TOKEN: ${{ secrets.ENTANDO_BOT_TOKEN }}
   PR_CHECKER_PATH: ".github/pr-title-checker-config.json"
 
-  DOCKER_EAP_IMAGE_BASE_NAME: entando/entando-eap73-clustered-base
   DOCKER_TOMCAT_IMAGE_BASE_NAME: entando/entando-tomcat-base
-  DOCKER_WILDFLY_IMAGE_BASE_NAME: entando/entando-wildfly17-base
-  DOCKER_EAP-WILDFLY_IMAGE_ARCHITECTURE: linux/amd64
   DOCKER_TOMCAT_IMAGE_ARCHITECTURE: linux/amd64,linux/arm64
   DOCKER_IMAGE_CONTEXT: .
-  DOCKER_EAP_IMAGE_FILE: Dockerfile.eap
   DOCKER_TOMCAT_IMAGE_FILE: Dockerfile.tomcat
-  DOCKER_WILDFLY_IMAGE_FILE: Dockerfile.wildfly
   DOCKER_IMAGE_PUSH: true
 
 jobs:
@@ -39,46 +34,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Docker meta-eap
-        id: meta-eap
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            ${{ env.DOCKER_EAP_IMAGE_BASE_NAME }}
-          tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=pr,value={{base_ref}}
-            type=ref,event=tag
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-            type=raw,event=pr,value={{base_ref}}
-
       - name: Docker meta-tomcat
         id: meta-tomcat
         uses: docker/metadata-action@v4
         with:
           images: |
             ${{ env.DOCKER_TOMCAT_IMAGE_BASE_NAME }}
-          tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=pr,value={{base_ref}}
-            type=ref,event=tag
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-            type=raw,event=pr,value={{base_ref}}
-
-      - name: Docker meta-wildfly
-        id: meta-wildfly
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            ${{ env.DOCKER_WILDFLY_IMAGE_BASE_NAME }}
           tags: |
             type=schedule
             type=ref,event=branch
@@ -111,16 +72,6 @@ jobs:
           username: ${{ secrets.ENTANDO_RHT_DOCKER_USERNAME }}
           password: ${{ secrets.ENTANDO_RHT_DOCKER_PASSWORD }}
 
-      - name: Build and publish EAP image
-        uses: docker/build-push-action@v4
-        with:
-          context: ${{ env.DOCKER_IMAGE_CONTEXT }}
-          file: ${{ env.DOCKER_EAP_IMAGE_FILE }}
-          push: ${{ env.DOCKER_IMAGE_PUSH }}
-          tags: ${{ steps.meta-eap.outputs.tags }}
-          labels: ${{ steps.meta-eap.outputs.labels }}
-          platforms: ${{ env.DOCKER_EAP-WILDFLY_IMAGE_ARCHITECTURE }}
-
       - name: Build and publish Tomcat image
         uses: docker/build-push-action@v4
         with:
@@ -130,13 +81,3 @@ jobs:
           tags: ${{ steps.meta-tomcat.outputs.tags }}
           labels: ${{ steps.meta-tomcat.outputs.labels }}
           platforms: ${{ env.DOCKER_TOMCAT_IMAGE_ARCHITECTURE }}
-
-      - name: Build and publish Wildfly image
-        uses: docker/build-push-action@v4
-        with:
-          context: ${{ env.DOCKER_IMAGE_CONTEXT }}
-          file: ${{ env.DOCKER_WILDFLY_IMAGE_FILE }}
-          push: ${{ env.DOCKER_IMAGE_PUSH }}
-          tags: ${{ steps.meta-wildfly.outputs.tags }}
-          labels: ${{ steps.meta-wildfly.outputs.labels }}
-          platforms: ${{ env.DOCKER_EAP-WILDFLY_IMAGE_ARCHITECTURE }}
