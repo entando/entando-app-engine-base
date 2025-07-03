@@ -8,14 +8,10 @@ source "${ENTANDO_COMMON_PATH}/translate-jboss-variables.sh"
 #set var to use custom context
 if [ "$ENTANDO_WEB_CONTEXT" == "/" ]; then
   MYCONTEXT="ROOT"
-  TOMCAT_BASE="<Context docBase=\"/entando-data/resources\" path=\"/cmsresources\" />"
+  TOMCAT_BASE="<Context docBase=\"/entando-data/resources\" path=\"/resources\" />"
 else
   MYCONTEXT="$ENTANDO_WEB_CONTEXT"
-  TOMCAT_BASE="<Context docBase=\"/entando-data/resources\" path=\"$ENTANDO_WEB_CONTEXT/cmsresources\" />"
-fi
-
-if [ "$CDS_ENABLED" == "true" ]; then
-  TOMCAT_BASE=""
+  TOMCAT_BASE="<Context docBase=\"/entando-data/resources\" path=\"$ENTANDO_WEB_CONTEXT/resources\" />"
 fi
 
 #rename war to change context

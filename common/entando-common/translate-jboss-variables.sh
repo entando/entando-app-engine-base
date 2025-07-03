@@ -54,13 +54,7 @@ if [ -z "$ENTANDO_WEB_CONTEXT" ]; then
   fi
 fi
 
-
-# By default RESOURCEROOTURL should be cmsresources to not collide with /resources
-# When CDS is enabled RESOURCEROOTURL must be resources and the resource handler inside app server must be disable
-RESOURCES_PATH_NAME="cmsresources"
-if [ "$CDS_ENABLED" == "true" ] || [ "$CDS_ENABLED" = true ]; then
-  RESOURCES_PATH_NAME="resources"
-fi
+RESOURCES_PATH_NAME="resources"
 
 
 #RESOURCEROOTURL Could be anything really as long as it is not /resources which would clash with files in the WAR
