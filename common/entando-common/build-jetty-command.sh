@@ -68,6 +68,7 @@ cp /jetty-runner/jetty.xml .
 # Running without -jar option in order to add SLF4J classes to the classpath and actually see Jetty logs
 export JETTY_COMMAND="java -cp "/jetty-runner/*" \
     -Ddb.migration.strategy=auto \
+    -Ddb.startup.check=true \
     -Ddb.restore.enabled=true \
     -Dentando.web.context="${ENTANDO_WEB_CONTEXT}" \
     -Dprofile.datasource.jndiname.servdb=${SERVDB_JNDI} \

@@ -68,6 +68,9 @@ export CATALINA_OPTS="$CATALINA_OPTS -DlogFilePrefix='${LOGFILEPREFIX}'"
 export CATALINA_OPTS="$CATALINA_OPTS -DlogName='${LOGNAME}'"
 export CATALINA_OPTS="$CATALINA_OPTS -DlogFileRotatePattern='${LOGFILEROTATEPATTERN}'"
 export CATALINA_OPTS="$CATALINA_OPTS -DlogActiveFileOutput='${LOGACTIVEFILEOUTPUT}'"
+if [ -n "$APPLICATION_BASE_URL" ]; then
+  export CATALINA_OPTS="$CATALINA_OPTS -DapplicationBaseURL=${APPLICATION_BASE_URL}"
+fi
 
 ##################
 # Entando configs
@@ -79,13 +82,19 @@ export CATALINA_OPTS="$CATALINA_OPTS -DredisActive=${REDIS_ACTIVE}"
 export CATALINA_OPTS="$CATALINA_OPTS -DredisAddress='${REDIS_ADDRESS}'"
 export CATALINA_OPTS="$CATALINA_OPTS -DredisAddresses='${REDIS_ADDRESSES}'"
 export CATALINA_OPTS="$CATALINA_OPTS -DSolarAddress='${SOLR_ADDRESS}'"
-export CATALINA_OPTS="$CATALINA_OPTS -DresourceRootURL=${RESOURCEROOTURL}"
+#export CATALINA_OPTS="$CATALINA_OPTS -DresourceRootURL=${RESOURCEROOTURL}"
 # manage if it's different from `/`(i.e: /portale)
 if [[ "$ENTANDO_WEB_CONTEXT" = "/" ]] ; then
+  export CATALINA_OPTS="$CATALINA_OPTS -DresourceRootURL=/resources/"
   export CATALINA_OPTS="$CATALINA_OPTS -DprotectedResourceRootURL=/protected/"
 else
+  export CATALINA_OPTS="$CATALINA_OPTS -DresourceRootURL=${ENTANDO_WEB_CONTEXT}/resources/"
   export CATALINA_OPTS="$CATALINA_OPTS -DprotectedResourceRootURL=${ENTANDO_WEB_CONTEXT}/protected/"
 fi
+export CATALINA_OPTS="$CATALINA_OPTS -DforceHttps=${FORCE_HTTPS}"
+
+
+export CATALINA_OPTS="$CATALINA_OPTS -DcmsResourceRootURL=${CMS_RESOURCES_ROOT_URL}"
 export CATALINA_OPTS="$CATALINA_OPTS -DresourceDiskRootFolder=/entando-data/resources/"
 export CATALINA_OPTS="$CATALINA_OPTS -DprotectedResourceDiskRootFolder=/entando-data/protected/"
 export CATALINA_OPTS="$CATALINA_OPTS -DindexDiskRootFolder=/entando-data/entando-indices"

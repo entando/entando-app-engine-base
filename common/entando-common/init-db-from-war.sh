@@ -12,7 +12,7 @@ tail -f db_creation.log &
 for i in {1..720}
 do
     sleep 1
-    if [[ -f db_creation.log ]] &&  fgrep --quiet "INIT DONE Entando" "db_creation.log" ; then
+    if [[ -f db_creation.log ]] &&  fgrep --quiet "Started Server" "db_creation.log" ; then
     # Attempt killing Jetty only AFTER waiting for it to terminate
         (echo "Waiting for Jetty process [$JETTY_PID] to shut down"; sleep 3; ps; kill -9 ${JETTY_PID}; ps) &
         wait ${JETTY_PID}
