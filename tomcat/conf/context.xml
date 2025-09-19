@@ -62,6 +62,4 @@
           minIdle="5"
           maxWaitMillis="10000"/>
 
-    <CookieProcessor className="org.entando.entando.aps.servlet.security.JSessionIdSameSiteCookieProcessor" />
-
 </Context>
