@@ -1,4 +1,4 @@
-FROM tomcat:9.0.105-jdk11-corretto
+FROM tomcat:9.0.109-jdk17-temurin
 
 LABEL io.k8s.description="Platform for building and running Entando clustered applications on Apache Tomcat 9.0" \
       io.k8s.display-name="Entando on Apache Tomcat 9.0"
@@ -49,9 +49,10 @@ ENV USERID_TO_USE=185 \
 # Update OS, install additional 
 # packages and add user to run tomcat
 #######################################    
-RUN yum install -y curl imagemagick nano software-properties-common wget rsync && \
-    yum clean all && \
-    yum autoremove -y && \
+RUN apt-get update && \
+    apt-get install -y curl imagemagick nano software-properties-common wget rsync && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
     useradd -s /sbin/nologin -U -u 185 tomcat && \
     chown -R 185:0 /usr/local/tomcat && \
     chmod -R ug+w /usr/local/tomcat
