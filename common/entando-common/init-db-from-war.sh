@@ -6,14 +6,14 @@ set -f
 $JETTY_COMMAND  &> db_creation.log &
 set +f
 export JETTY_PID=$(echo $!)
-echo "JETTY_PID=${JETTY_PID}"
-sleep 3
-tail -f db_creation.log &
+#echo "JETTY_PID=${JETTY_PID}"
+echo "Waiting for database initialization to complete..."
 for i in {1..720}
 do
-    sleep 1
+    sleep 3
     if [[ -f db_creation.log ]] &&  fgrep --quiet "INIT DONE Entando" "db_creation.log" ; then
     # Attempt killing Jetty only AFTER waiting for it to terminate
+        echo "Database initialization completed successfully!"
         (echo "Waiting for Jetty process [$JETTY_PID] to shut down"; sleep 3; ps; kill -9 ${JETTY_PID}; ps) &
         wait ${JETTY_PID}
         if fgrep --quiet "java.util.ConcurrentModificationException" "db_creation.log"  || fgrep --quiet "java.lang.ArrayIndexOutOfBoundsException" "db_creation.log"  ; then
