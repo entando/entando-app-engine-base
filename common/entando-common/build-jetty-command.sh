@@ -27,7 +27,7 @@ if [ -z "$JETTY_VERSION" ]; then
       JETTY_VERSION=9.4.8.v20180619
     ;;
     *)
-      JETTY_VERSION=10.0.7
+      JETTY_VERSION=12.0.27
     ;;
   esac
 fi
@@ -90,5 +90,5 @@ export JETTY_COMMAND="java -cp "/jetty-runner/*" \
     -DresourceDiskRootFolder=/entando-data/resources/ \
     -DprotectedResourceDiskRootFolder=/entando-data/protected/ \
     -DindexDiskRootFolder=/tmp/entando-indices \
-    org.eclipse.jetty.runner.Runner \
+    org.eclipse.jetty.ee10.runner.Runner \
     --lib /jetty-runner . jetty.xml"
