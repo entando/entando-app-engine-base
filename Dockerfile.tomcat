@@ -58,9 +58,19 @@ RUN apt-get update && \
     chmod -R ug+w /usr/local/tomcat
 
 
-#######################################    
+#######################################
+# Download Jetty Home 12 for database initialization
+#######################################
+ARG JETTY_VERSION=12.0.27
+RUN wget -O /tmp/jetty-home.tar.gz https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-home/${JETTY_VERSION}/jetty-home-${JETTY_VERSION}.tar.gz && \
+    tar -xzf /tmp/jetty-home.tar.gz -C /tmp && \
+    mv /tmp/jetty-home-${JETTY_VERSION} /jetty-home && \
+    rm /tmp/jetty-home.tar.gz && \
+    chown -R 185:0 /jetty-home
+
+#######################################
 # Copy scripts to prepare and run
-#######################################    
+#######################################
 COPY --chown=185:0 ./common/entando-common "${ENTANDO_COMMON_PATH}"
 COPY --chown=185:0 ./common/jetty-runner /jetty-runner
 COPY --chown=185:0 tomcat/conf/setenv.sh /usr/local/tomcat/bin/setenv.sh

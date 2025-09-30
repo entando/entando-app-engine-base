@@ -64,12 +64,47 @@ cp -Rf resources /entando-data/
 cp -Rf protected /entando-data/
 
 
-cp /jetty-runner/jetty.xml .
-# Running without -jar option in order to add SLF4J classes to the classpath and actually see Jetty logs
-export JETTY_COMMAND="java -cp "/jetty-runner/*" \
+# Use Jetty Home 12 with proper configuration
+export JETTY_HOME=/jetty-home
+export JETTY_BASE=/tmp/entando-jetty-base
+
+# Create Jetty base directory structure
+mkdir -p $JETTY_BASE/{webapps,lib,etc,resources}
+
+# Copy the exploded WAR as ROOT webapp (will be deployed at /)
+cp -r /tmp/entando-db-build $JETTY_BASE/webapps/ROOT
+
+# Copy JDBC drivers to webapp lib so they're available to the application
+cp /jetty-runner/derby*.jar $JETTY_BASE/webapps/ROOT/WEB-INF/lib/
+cp /jetty-runner/postgresql.jar $JETTY_BASE/webapps/ROOT/WEB-INF/lib/
+cp /jetty-runner/mysql-connector-java.jar $JETTY_BASE/webapps/ROOT/WEB-INF/lib/
+cp /jetty-runner/ojdbc8.jar $JETTY_BASE/webapps/ROOT/WEB-INF/lib/
+
+# Copy additional libraries needed for JNDI datasources to Jetty base lib
+cp /jetty-runner/*.jar $JETTY_BASE/lib/
+
+# Copy the existing jetty.xml configuration file as jetty-web.xml for the webapp
+cp /jetty-runner/jetty.xml $JETTY_BASE/webapps/ROOT/WEB-INF/jetty-web.xml
+
+# Create jetty base start configuration
+cat > $JETTY_BASE/start.ini << 'INI_EOF'
+--module=server
+--module=http
+--module=ee10-deploy
+--module=ee10-webapp
+--module=ee10-plus
+--module=ee10-annotations
+--module=ee10-jsp
+jetty.http.port=8080
+INI_EOF
+
+# Build Jetty command directly like the old version
+export JETTY_COMMAND="java \
+    -Djetty.home=/jetty-home \
+    -Djetty.base=/tmp/entando-jetty-base \
     -Ddb.migration.strategy=auto \
     -Ddb.restore.enabled=true \
-    -Dentando.web.context="${ENTANDO_WEB_CONTEXT}" \
+    -Dentando.web.context=${ENTANDO_WEB_CONTEXT} \
     -Dprofile.datasource.jndiname.servdb=${SERVDB_JNDI} \
     -Dprofile.datasource.jndiname.portdb=${PORTDB_JNDI} \
     -Dprofile.database.url.portdb=${PORTDB_URL} \
@@ -90,5 +125,4 @@ export JETTY_COMMAND="java -cp "/jetty-runner/*" \
     -DresourceDiskRootFolder=/entando-data/resources/ \
     -DprotectedResourceDiskRootFolder=/entando-data/protected/ \
     -DindexDiskRootFolder=/tmp/entando-indices \
-    org.eclipse.jetty.ee10.runner.Runner \
-    --lib /jetty-runner . jetty.xml"
+    -jar /jetty-home/start.jar"
