@@ -91,3 +91,9 @@ export CATALINA_OPTS="$CATALINA_OPTS -DprotectedResourceDiskRootFolder=/entando-
 export CATALINA_OPTS="$CATALINA_OPTS -DindexDiskRootFolder=/entando-data/entando-indices"
 export CATALINA_OPTS="$CATALINA_OPTS -Ddb.environment=production"
 export CATALINA_OPTS="$CATALINA_OPTS -Dfile.upload.maxSize=${FILE_UPLOAD_MAX_SIZE:-52428800}"
+
+##################
+# CORS configs
+##################
+export CATALINA_OPTS="$CATALINA_OPTS -Dcors.enabled=${CORS_ENABLED:-true}"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcors.access.control.allow.origin=${CORS_ALLOW_ORIGIN:-*}"
