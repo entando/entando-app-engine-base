@@ -97,3 +97,10 @@ export CATALINA_OPTS="$CATALINA_OPTS -Dfile.upload.maxSize=${FILE_UPLOAD_MAX_SIZ
 ##################
 export CATALINA_OPTS="$CATALINA_OPTS -Dcors.enabled=${CORS_ENABLED:-true}"
 export CATALINA_OPTS="$CATALINA_OPTS -Dcors.access.control.allow.origin=${CORS_ALLOW_ORIGIN:-*}"
+
+##################
+# Cookie SameSite policies / secure
+##################
+export CATALINA_OPTS="$CATALINA_OPTS -Ddefault.samesite.policy=${DEFAULT_SAMESITE_POLICY:-}"
+export CATALINA_OPTS="$CATALINA_OPTS -Djsessionid.samesite.policy=${JSESSIONID_SAMESITE_POLICY:-Strict}"
+export CATALINA_OPTS="$CATALINA_OPTS -Djsessionid.secure=${JSESSIONID_SECURE:-false}"
