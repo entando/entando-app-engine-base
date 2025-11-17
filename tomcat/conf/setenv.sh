@@ -103,4 +103,3 @@ export CATALINA_OPTS="$CATALINA_OPTS -Dcors.access.control.allow.origin=${CORS_A
 ##################
 export CATALINA_OPTS="$CATALINA_OPTS -Ddefault.samesite.policy=${DEFAULT_SAMESITE_POLICY:-}"
 export CATALINA_OPTS="$CATALINA_OPTS -Djsessionid.samesite.policy=${JSESSIONID_SAMESITE_POLICY:-Strict}"
-export CATALINA_OPTS="$CATALINA_OPTS -Djsessionid.secure=${JSESSIONID_SECURE:-false}"
