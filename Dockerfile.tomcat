@@ -1,7 +1,7 @@
 FROM tomcat:10.1.46-jdk17-temurin
 
-LABEL io.k8s.description="Platform for building and running Entando clustered applications on Apache Tomcat 9.0" \
-      io.k8s.display-name="Entando on Apache Tomcat 9.0"
+LABEL io.k8s.description="Platform for building and running Entando clustered applications on Apache Tomcat 10" \
+      io.k8s.display-name="Entando on Apache Tomcat 10"
 
 ENV USERID_TO_USE=185 \
     STI_SCRIPTS_PATH="/usr/local/tomcat/bin" \

@@ -103,3 +103,16 @@ export CATALINA_OPTS="$CATALINA_OPTS -Dcors.access.control.allow.origin=${CORS_A
 ##################
 export CATALINA_OPTS="$CATALINA_OPTS -Ddefault.samesite.policy=${DEFAULT_SAMESITE_POLICY:-}"
 export CATALINA_OPTS="$CATALINA_OPTS -Djsessionid.samesite.policy=${JSESSIONID_SAMESITE_POLICY:-Strict}"
+
+##################
+# Log CATALINA_OPTS masking sensitive values
+# (VersionLoggerListener logArgs is disabled in server.xml)
+##################
+MASKED_OPTS=$(echo "$CATALINA_OPTS" \
+  | sed -E 's/(-D[^ ]*\.(password|username|url)=)[^ ]*/\1******/gi' \
+  | tr ' ' '\n' \
+  | sed '/^$/d' \
+  | sed 's/^/    /')
+echo "CATALINA_OPTS:"
+echo "$MASKED_OPTS"
+echo ""
