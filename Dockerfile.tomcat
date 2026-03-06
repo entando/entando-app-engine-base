@@ -1,7 +1,7 @@
-FROM tomcat:9.0.71-jdk11-temurin
+FROM tomcat:10.1.46-jdk17-temurin
 
-LABEL io.k8s.description="Platform for building and running Entando clustered applications on Apache Tomcat 9.0" \
-      io.k8s.display-name="Entando on Apache Tomcat 9.0"
+LABEL io.k8s.description="Platform for building and running Entando clustered applications on Apache Tomcat 10" \
+      io.k8s.display-name="Entando on Apache Tomcat 10"
 
 ENV USERID_TO_USE=185 \
     STI_SCRIPTS_PATH="/usr/local/tomcat/bin" \
@@ -58,9 +58,19 @@ RUN apt-get update && \
     chmod -R ug+w /usr/local/tomcat
 
 
-#######################################    
+#######################################
+# Download Jetty Home 12 for database initialization
+#######################################
+ARG JETTY_VERSION=12.0.27
+RUN wget -O /tmp/jetty-home.tar.gz https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-home/${JETTY_VERSION}/jetty-home-${JETTY_VERSION}.tar.gz && \
+    tar -xzf /tmp/jetty-home.tar.gz -C /tmp && \
+    mv /tmp/jetty-home-${JETTY_VERSION} /jetty-home && \
+    rm /tmp/jetty-home.tar.gz && \
+    chown -R 185:0 /jetty-home
+
+#######################################
 # Copy scripts to prepare and run
-#######################################    
+#######################################
 COPY --chown=185:0 ./common/entando-common "${ENTANDO_COMMON_PATH}"
 COPY --chown=185:0 ./common/jetty-runner /jetty-runner
 COPY --chown=185:0 tomcat/conf/setenv.sh /usr/local/tomcat/bin/setenv.sh
@@ -69,19 +79,21 @@ COPY --chown=185:0 tomcat/run ${STI_SCRIPTS_PATH}/run
 #######################################    
 # Download and copy dbms drivers
 #######################################    
-ARG DERBY_JDBC_DRIVER_VERSION=10.9.1.0
-ARG POSTGRESQL_JDBC_DRIVER_VERSION=42.2.25
-ARG MYSQL_JDBC_DRIVER_VERSION=8.0.28
-ARG ORACLE_JDBC_DRIVER_VERSION=21.4.0.0.1
+ARG DERBY_JDBC_DRIVER_VERSION=10.16.1.1
+ARG POSTGRESQL_JDBC_DRIVER_VERSION=42.7.8
+ARG MYSQL_JDBC_DRIVER_VERSION=9.4.0
+ARG ORACLE_JDBC_DRIVER_VERSION=23.9.0.25.07
 RUN curl https://repo1.maven.org/maven2/org/apache/derby/derby/${DERBY_JDBC_DRIVER_VERSION}/derby-${DERBY_JDBC_DRIVER_VERSION}.jar -o /jetty-runner/derby.jar
+RUN curl https://repo1.maven.org/maven2/org/apache/derby/derbytools/${DERBY_JDBC_DRIVER_VERSION}/derbytools-${DERBY_JDBC_DRIVER_VERSION}.jar -o /jetty-runner/derbytools.jar
+RUN curl https://repo1.maven.org/maven2/org/apache/derby/derbyshared/${DERBY_JDBC_DRIVER_VERSION}/derbyshared-${DERBY_JDBC_DRIVER_VERSION}.jar -o /jetty-runner/derbyshared.jar
+RUN curl https://repo1.maven.org/maven2/org/apache/derby/derbynet/${DERBY_JDBC_DRIVER_VERSION}/derbynet-${DERBY_JDBC_DRIVER_VERSION}.jar -o /jetty-runner/derbynet.jar
 RUN curl https://repo1.maven.org/maven2/org/apache/derby/derbyclient/${DERBY_JDBC_DRIVER_VERSION}/derbyclient-${DERBY_JDBC_DRIVER_VERSION}.jar -o /jetty-runner/derbyclient.jar
 RUN curl https://repo1.maven.org/maven2/org/postgresql/postgresql/${POSTGRESQL_JDBC_DRIVER_VERSION}/postgresql-${POSTGRESQL_JDBC_DRIVER_VERSION}.jar -o /jetty-runner/postgresql.jar
-RUN curl https://repo1.maven.org/maven2/mysql/mysql-connector-java/${MYSQL_JDBC_DRIVER_VERSION}/mysql-connector-java-${MYSQL_JDBC_DRIVER_VERSION}.jar -o /jetty-runner/mysql-connector-java.jar
+RUN curl https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/${MYSQL_JDBC_DRIVER_VERSION}/mysql-connector-j-${MYSQL_JDBC_DRIVER_VERSION}.jar -o /jetty-runner/mysql-connector-java.jar
 RUN curl https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/${ORACLE_JDBC_DRIVER_VERSION}/ojdbc8-${ORACLE_JDBC_DRIVER_VERSION}.jar -o /jetty-runner/ojdbc8.jar
 
 RUN cp /jetty-runner/postgresql.jar /usr/local/tomcat/lib/ && \
-    cp /jetty-runner/derby.jar /usr/local/tomcat/lib/ && \
-    cp /jetty-runner/derbyclient.jar /usr/local/tomcat/lib/ && \
+    cp /jetty-runner/derby*.jar /usr/local/tomcat/lib/ && \
     cp /jetty-runner/mysql-connector-java.jar /usr/local/tomcat/lib/ && \
     cp /jetty-runner/ojdbc8.jar /usr/local/tomcat/lib/
 

@@ -91,3 +91,28 @@ export CATALINA_OPTS="$CATALINA_OPTS -DprotectedResourceDiskRootFolder=/entando-
 export CATALINA_OPTS="$CATALINA_OPTS -DindexDiskRootFolder=/entando-data/entando-indices"
 export CATALINA_OPTS="$CATALINA_OPTS -Ddb.environment=production"
 export CATALINA_OPTS="$CATALINA_OPTS -Dfile.upload.maxSize=${FILE_UPLOAD_MAX_SIZE:-52428800}"
+
+##################
+# CORS configs
+##################
+export CATALINA_OPTS="$CATALINA_OPTS -Dcors.enabled=${CORS_ENABLED:-true}"
+export CATALINA_OPTS="$CATALINA_OPTS -Dcors.access.control.allow.origin=${CORS_ALLOW_ORIGIN:-*}"
+
+##################
+# Cookie SameSite policies / secure
+##################
+export CATALINA_OPTS="$CATALINA_OPTS -Ddefault.samesite.policy=${DEFAULT_SAMESITE_POLICY:-}"
+export CATALINA_OPTS="$CATALINA_OPTS -Djsessionid.samesite.policy=${JSESSIONID_SAMESITE_POLICY:-Strict}"
+
+##################
+# Log CATALINA_OPTS masking sensitive values
+# (VersionLoggerListener logArgs is disabled in server.xml)
+##################
+MASKED_OPTS=$(echo "$CATALINA_OPTS" \
+  | sed -E 's/(-D[^ ]*\.(password|username|url)=)[^ ]*/\1******/gi' \
+  | tr ' ' '\n' \
+  | sed '/^$/d' \
+  | sed 's/^/    /')
+echo "CATALINA_OPTS:"
+echo "$MASKED_OPTS"
+echo ""
