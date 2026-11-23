@@ -1,4 +1,4 @@
-FROM tomcat:10.1.46-jdk17-temurin
+FROM tomcat:10.1.62-jdk17-temurin-noble
 
 LABEL io.k8s.description="Platform for building and running Entando clustered applications on Apache Tomcat 10" \
       io.k8s.display-name="Entando on Apache Tomcat 10"
